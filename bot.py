@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-from handlers import start_handler, registration_handler
+from handlers import start_handler, registration_handler, menu_handler
 
 load_dotenv()
 
@@ -16,7 +16,8 @@ async def main():
 
     dp.include_routers(
         start_handler.router,
-        registration_handler.router
+        registration_handler.router,
+        menu_handler.router
     )
 
     await bot.delete_webhook(drop_pending_updates=True)

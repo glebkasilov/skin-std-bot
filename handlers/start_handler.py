@@ -10,12 +10,13 @@ from states.check_subscribe_state import CheckSubscribe
 from keyboards.inline_keyboards.check_subscribe_keyboard import sub_ver_menu
 from keyboards.reply_keyboards.subscribe_keyboard import sub_keyboard
 from keyboards.reply_keyboards.register_keyboard import reg_keyboard
+from filters.not_in_db_filter import NotInDbFilter
 
 
 router = Router()
 
 
-@router.message(F.text, Command("start"))
+@router.message(F.text, Command("start"), NotInDbFilter())
 async def cmd_start(message: Message, state: FSMContext):
     builder = MediaGroupBuilder(
         caption="Приветствую Вас в нашем боте!...",
@@ -35,7 +36,7 @@ async def cmd_start(message: Message, state: FSMContext):
     await state.set_state(CheckSubscribe.not_subscribe)
 
 
-@router.message(F.text == "Подписки", CheckSubscribe.not_subscribe)
+@router.message(F.text == "Подписки", CheckSubscribe.not_subscribe, NotInDbFilter())
 async def cmd_subscribe(message: Message, state: FSMContext):
     await message.answer(
         "Подписка на каналы",
@@ -43,7 +44,7 @@ async def cmd_subscribe(message: Message, state: FSMContext):
     )
 
 
-@router.callback_query(CheckSubscribe.not_subscribe, F.data == "sub_check")
+@router.callback_query(CheckSubscribe.not_subscribe, F.data == "sub_check", NotInDbFilter())
 async def check_subs(callback: CallbackQuery, bot: Bot, state: FSMContext):
     user_channel_status = await bot.get_chat_member(chat_id='@freeskis', user_id=callback.from_user.id)
     if user_channel_status.status != 'left':
@@ -53,5 +54,3 @@ async def check_subs(callback: CallbackQuery, bot: Bot, state: FSMContext):
         await callback.message.answer("Теперь Вы можете зарегистрироваться в боте", reply_markup=reg_keyboard)
     else:
         await bot.answer_callback_query(callback.id, text='Для начала подпишись на наш канал', show_alert=True)
-
-

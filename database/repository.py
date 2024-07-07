@@ -45,15 +45,15 @@ class UserRepository:
         return username
 
     @classmethod
-    def update_money(cls, telegram_id: int, money: int) -> None:
+    def add_money(cls, telegram_id: int, money: float) -> None:
         session = cls.database_controler.create_session()
         user = session.query(User).filter(
             User.telegram_id == telegram_id
         ).first()
-        user.money = money
+        user.money += money
         session.commit()
         session.close()
-    
+
     @classmethod
     def update_prime_status(cls, telegram_id: int, prime_status: bool) -> None:
         session = cls.database_controler.create_session()
@@ -63,5 +63,31 @@ class UserRepository:
         user.prime_status = prime_status
         session.commit()
         session.close()
+
+    @classmethod
+    def add_refferals(cls, telegram_id: int, refferals: int) -> None:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.telegram_id == telegram_id
+        ).first()
+        user.refferals = refferals + user.refferals
+        session.commit()
+        session.close()
+
+    @classmethod
+    def id_in_database(cls, telegram_id: int) -> bool:
+        session = cls.database_controler.create_session()
+        users = session.query(User).all()
+        return telegram_id in [int(user.telegram_id) for user in users]
+
     
     
+    
+    @classmethod
+    def get_user_prime_status(cls, telegram_id: int) -> bool:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.telegram_id == telegram_id
+        ).first()
+        session.close()
+        return user.prime_status

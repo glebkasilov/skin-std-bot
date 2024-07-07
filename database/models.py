@@ -24,15 +24,15 @@ class User(Base):
         sqlalchemy.String(32),
         unique=True
     )
-    
+
     money = sqlalchemy.Column(
-        sqlalchemy.Integer
+        sqlalchemy.Float
     )
-    
+
     refferals = sqlalchemy.Column(
         sqlalchemy.Integer
     )
-    
+
     prime_status = sqlalchemy.Column(
         sqlalchemy.Boolean
     )
