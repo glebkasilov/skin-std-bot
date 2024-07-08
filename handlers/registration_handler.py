@@ -51,5 +51,5 @@ async def id_input(message: Message, state: FSMContext):
         prime_status=False
     )
     await state.clear()
-    
+
     await message.answer("Регистрация прошла успешно!", reply_markup=only_menu_keyboard)

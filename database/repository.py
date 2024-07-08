@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, Admin
 from .engine import EngineController
 
 
@@ -80,9 +80,8 @@ class UserRepository:
         users = session.query(User).all()
         return telegram_id in [int(user.telegram_id) for user in users]
 
-    
-    
-    
+    # TODO: add get methods
+
     @classmethod
     def get_user_prime_status(cls, telegram_id: int) -> bool:
         session = cls.database_controler.create_session()
@@ -91,3 +90,33 @@ class UserRepository:
         ).first()
         session.close()
         return user.prime_status
+
+
+class AdminRepository:
+    database_controller = EngineController()
+
+    @classmethod
+    def get_admin(cls, admin_id: int) -> Admin:
+        session = cls.database_controller.create_session()
+        admin = session.query(Admin).filter(
+            Admin.telegram_id == admin_id).first()
+        session.close()
+        return admin
+
+    @classmethod
+    def get_all_admins(cls) -> list[Admin]:
+        session = cls.database_controller.create_session()
+        admins = session.query(Admin).all()
+        session.close()
+        return admins
+
+    @classmethod
+    def create(cls, telegram_id: str, name: str) -> None:
+        session = cls.database_controller.create_session()
+        admin = Admin(
+            telegram_id=telegram_id,
+            name=name
+        )
+        session.add(admin)
+        session.commit()
+        session.close()

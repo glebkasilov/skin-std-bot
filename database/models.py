@@ -39,3 +39,20 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f"User: {self.telegram_id}"
+    
+    
+class Admin(Base):
+    __tablename__ = "admin"
+
+    telegram_id = sqlalchemy.Column(
+        sqlalchemy.String(32),
+        primary_key=True,
+        unique=True
+    )
+    
+    name = sqlalchemy.Column(
+        sqlalchemy.String(128)
+    )
+
+def __repr__(self) -> str:
+    return f"Admin: {self.telegram_id}"

@@ -28,13 +28,21 @@ async def click(message: Message):
         f"+ {count} голды"
     )
     UserRepository.add_money(message.from_user.id, count)
-    
+
+
 @router.message(F.text == "Получить подписку", InDbFilter())
 async def subscribe(message: Message):
     await message.reply(
-        "Для подписки..."
+        f"""✅Способы получения подписки:
+
+    •Пригласите 15 человек
+
+    или
+
+    •Пополните бота на 300₽"""
     )
-    
+
+
 @router.message(F.text == "Вывести голду", InDbFilter())
 async def subscribe(message: Message):
     if not UserRepository.get_user_prime_status(message.from_user.id):
@@ -45,3 +53,29 @@ async def subscribe(message: Message):
         await message.reply(
             "Ахуел?"
         )
+
+
+@router.message(F.text == "Тех. поддержка", InDbFilter())
+async def support(message: Message):
+    await message.reply(
+        "Для техничекской поддержки напишите /help"
+    )
+
+
+@router.message(F.text == "Профиль и баланс", InDbFilter())
+async def profile(message: Message):
+    pass
+
+
+@router.message(F.text == "Отзывы", InDbFilter())
+async def reviews(message: Message):
+    await message.reply(
+        "Влад, пидорас, сделай отзывы"
+    )
+
+
+@router.message(F.text == "Канал", InDbFilter())
+async def channel(message: Message):
+    await message.reply(
+        "Канал: @freeskis"
+    )
