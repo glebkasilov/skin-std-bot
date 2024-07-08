@@ -1,6 +1,7 @@
 from aiogram import Router, F, types
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.media_group import MediaGroupBuilder
@@ -64,7 +65,26 @@ async def support(message: Message):
 
 @router.message(F.text == "Профиль и баланс", InDbFilter())
 async def profile(message: Message):
-    pass
+    user = message.from_user.id
+    builder = MediaGroupBuilder(
+        caption=f"""🐙<strong> Профиль</strong> [{user}]
+➖➖➖➖➖➖➖➖➖➖
+🔴 <strong>{"Нет премиум статуса"if not UserRepository.get_user_prime_status(user) else "Премиум статус подключен!"}</strong>
+➖➖➖➖➖➖➖➖➖➖
+💵 Баланс: <strong>{UserRepository.get_user_money(user)} ₽</strong>
+🔄 На выдаче: <strong>0 ₽</strong>
+➖➖➖➖➖➖➖➖➖➖
+🏠 Рефералы: <strong>{UserRepository.get_user_refferals(user)}</strong>"""
+    )
+
+    builder.add_photo(
+        media=FSInputFile("images/profile.png"),
+        parse_mode=ParseMode.HTML
+    )
+
+    await message.reply_media_group(
+        media=builder.build()
+    )
 
 
 @router.message(F.text == "Отзывы", InDbFilter())

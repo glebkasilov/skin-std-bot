@@ -80,8 +80,42 @@ class UserRepository:
         users = session.query(User).all()
         return telegram_id in [int(user.telegram_id) for user in users]
 
-    # TODO: add get methods
+    @classmethod
+    def get_user_name(cls, telegram_id: int) -> str:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.telegram_id == telegram_id
+        ).first()
+        session.close()
+        return user.name
 
+    @classmethod
+    def get_user_std_id(cls, telegram_id: int) -> int:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.telegram_id == telegram_id
+        ).first()
+        session.close()
+        return user.std_id
+
+    @classmethod
+    def get_user_money(cls, telegram_id: int) -> float:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.telegram_id == telegram_id
+        ).first()
+        session.close()
+        return user.money
+
+    @classmethod
+    def get_user_refferals(cls, telegram_id: int) -> int:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.telegram_id == telegram_id
+        ).first()
+        session.close()
+        return user.refferals
+    
     @classmethod
     def get_user_prime_status(cls, telegram_id: int) -> bool:
         session = cls.database_controler.create_session()
