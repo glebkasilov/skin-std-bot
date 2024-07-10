@@ -71,8 +71,8 @@ async def profile(message: Message):
 ➖➖➖➖➖➖➖➖➖➖
 🔴 <strong>{"Нет премиум статуса"if not UserRepository.get_user_prime_status(user) else "Премиум статус подключен!"}</strong>
 ➖➖➖➖➖➖➖➖➖➖
-💵 Баланс: <strong>{UserRepository.get_user_money(user)} ₽</strong>
-🔄 На выдаче: <strong>0 ₽</strong>
+💵 Баланс: <strong>{UserRepository.get_user_money(user)} G</strong>
+🔄 На выдаче: <strong>0 G</strong>
 ➖➖➖➖➖➖➖➖➖➖
 🏠 Рефералы: <strong>{UserRepository.get_user_refferals(user)}</strong>"""
     )
