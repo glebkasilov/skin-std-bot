@@ -3,7 +3,6 @@ from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.utils.media_group import MediaGroupBuilder
 
 from states.check_subscribe_state import CheckSubscribe
 from database.repository import UserRepository

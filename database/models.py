@@ -39,8 +39,8 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f"User: {self.telegram_id}"
-    
-    
+
+
 class Admin(Base):
     __tablename__ = "admin"
 
@@ -49,10 +49,31 @@ class Admin(Base):
         primary_key=True,
         unique=True
     )
-    
+
     name = sqlalchemy.Column(
         sqlalchemy.String(128)
     )
 
-def __repr__(self) -> str:
-    return f"Admin: {self.telegram_id}"
+    def __repr__(self) -> str:
+        return f"Admin: {self.telegram_id}"
+
+
+class Support(Base):
+    __tablename__ = "support"
+
+    telegram_id = sqlalchemy.Column(
+        sqlalchemy.String(32),
+        primary_key=True,
+        unique=True
+    )
+    
+    username = sqlalchemy.Column(
+        sqlalchemy.String(128)
+    )
+
+    question = sqlalchemy.Column(
+        sqlalchemy.String(4096)
+    )
+
+    def __repr__(self) -> str:
+        return f"Question from a user: {self.telegram_id}"

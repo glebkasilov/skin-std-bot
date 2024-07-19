@@ -65,4 +65,7 @@ async def check_subs(callback: CallbackQuery, bot: Bot, state: FSMContext):
         await state.set_state(CheckSubscribe.is_subscribe)
         await callback.message.answer("Теперь Вы можете зарегистрироваться в боте", reply_markup=reg_keyboard)
     else:
-        await bot.answer_callback_query(callback.id, text='Для начала подпишись на наш канал', show_alert=True)
+        await callback.answer(
+            text='Для начала подпишись на наш канал',
+            show_alert=True
+        )

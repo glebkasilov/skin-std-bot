@@ -2,8 +2,6 @@ from aiogram import Router, F, types
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.enums import ParseMode
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.media_group import MediaGroupBuilder
 from random import randint
 

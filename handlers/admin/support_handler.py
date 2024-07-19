@@ -1,11 +1,15 @@
-from aiogram import Router, F, Bot
-from aiogram.types import CallbackQuery, Message
+from aiogram import Router, F, types
+from bot import Bot
+from aiogram.filters import Command
+from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from aiogram.utils.media_group import MediaGroupBuilder
 
-from keyboards.inline_keyboards.admin.admin_keyboard import make_admin_keyboard
-from keyboards.inline_keyboards.admin.question_keyboard import make_keyboard
-from database.repository import AdminRepository
+from database.repository import SupportRepository, AdminRepository
+from filters.check_admin import CheckAdmin
+from keyboards.inline_keyboards.admin.support_answer_keyboard import support_answer_menu
 
 
 router = Router()
@@ -15,56 +19,45 @@ class Support(StatesGroup):
     answer_with_text = State()
 
 
-@router.callback_query(F.data.startswith("question_"))
-async def answer_question(callback: CallbackQuery, state: FSMContext):
-    user_id = callback.data.split("_")[-1]
-    if "question_pass_" in callback.data:
-        question = callback.data.split("_")[-2]
-        await callback.message.edit_text(
-            "Выберите админа, которому передать вопрос:",
-            reply_markup=await make_admin_keyboard(
-                str(callback.from_user.id),
-                AdminRepository.get_all_admins(),
-                user_id,
-                question
-            )
+@router.message(F.text, Command("support"), CheckAdmin())
+async def answer_support(message: Message, state: FSMContext):
+    if len(SupportRepository.get_all_questions()) == 1:
+        await message.reply(
+            f"У Вас новый вопрос, ответить на него?",
+            reply_markup=support_answer_menu
         )
-    elif "question_answer_" in callback.data:
-        await callback.message.edit_text(
-            "Напишите ответ на вопрос пользователя: "
+    
+    elif len(SupportRepository.get_all_questions()) != 0:
+        await message.reply(
+            f"У Вас {len(SupportRepository.get_all_questions())} вопроса(ов), ответить на один из них?",
+            reply_markup=support_answer_menu
         )
+
+    else:
+        await message.reply(
+            "У Вас нет вопросов",
+        )
+
+
+@router.callback_query(F.data.startswith("support_"), CheckAdmin())
+async def answer_support_for_message(callback: CallbackQuery, state: FSMContext):
+    answer_support = callback.data.split("_")[1]
+    if answer_support == "yes":
+        qustion_mass = SupportRepository.get_question()
+        await callback.message.delete()
         await state.set_state(Support.answer_with_text)
-        await state.update_data({callback.from_user.id: user_id})
-        await callback.answer()
+        await callback.message.answer(f"Вопрос от {qustion_mass.username}: {qustion_mass.question}\nНапишите Ваш ответ:", reply_markup=types.ReplyKeyboardRemove())
+        await state.update_data({"id": qustion_mass.telegram_id})
+    else:
+        await callback.message.delete()
 
 
-@router.message(Support.answer_with_text, F.text)
-async def answer_with_text(message: Message, state: FSMContext, bot: Bot):
-    text = message.text
+@router.message(F.text, Support.answer_with_text, CheckAdmin())
+async def answer_support_text(message: Message, bot: Bot, state: FSMContext):
     data = await state.get_data()
-    admin = AdminRepository.get_admin(message.from_user.id)
-    await message.answer(
-        "Ваш ответ успешно отправлен)"
-    )
     await bot.send_message(
-        chat_id=data[message.from_user.id],
-        text=f"Ответ от {admin.name}: {text}"
+        chat_id=data["id"],
+        text=f"От администратора {AdminRepository.get_admin(message.from_user.id).name}:\n{message.text}"
     )
-    await state.set_data({message.from_user.id: None})
-    await state.set_data({data[message.from_user.id]: None})
+    SupportRepository.delete_question(data["id"])
     await state.clear()
-
-
-@router.callback_query(F.data.startswith("admin_"))
-async def redirect_to_admin(callback: CallbackQuery, state: FSMContext, bot: Bot):
-    data = callback.data.split("_")
-    to_admin = AdminRepository.get_admin(data[-3])
-    await bot.send_message(
-        chat_id=data[-3],
-        text=f"Перенаправленный вопрос от админа: {data[-4]}",
-        reply_markup=await make_keyboard(data[-1], data[-4])
-    )
-    await callback.message.edit_text(
-        text=f"Вопрос передан админу: {to_admin.name}",
-    )
-    await callback.answer()
