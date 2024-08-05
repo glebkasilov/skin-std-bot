@@ -8,7 +8,8 @@ from states.check_subscribe_state import CheckSubscribe
 from database.repository import UserRepository
 from filters.not_in_db_filter import NotInDbFilter
 from keyboards.reply_keyboards.only_menu_keyboard import only_menu_keyboard
-
+from keyboards.inline_keyboards.refer_choice_keyboard import refer_choice_menu
+from keyboards.inline_keyboards.refer_choice_back_keyboard import refer_choice_back_menu
 
 router = Router()
 
@@ -16,6 +17,7 @@ router = Router()
 class Registration(StatesGroup):
     name_input = State()
     id_input = State()
+    refer_input = State()
 
 
 @router.message(F.text == "Зарегистрироваться", CheckSubscribe.is_subscribe, NotInDbFilter())
@@ -38,17 +40,49 @@ async def name_input(message: Message, state: FSMContext):
 
 @router.message(Registration.id_input, F.text, NotInDbFilter())
 async def id_input(message: Message, state: FSMContext):
-    await state.update_data({"id": message.text})
-    data = await state.get_data()
+    user_message = message.text
+    if all(char in "0123456789" for char in user_message):
+        await state.update_data({"id": user_message})
+        data = await state.get_data()
 
-    UserRepository.add_user(
-        telegram_id=message.from_user.id,
-        name=data["name"],
-        std_id=data["id"],
-        money=0,
-        refferals=0,
-        prime_status=False
-    )
-    await state.clear()
+        UserRepository.add_user(
+            telegram_id=message.from_user.id,
+            username=message.from_user.username,
+            name=data["name"],
+            std_id=data["id"],
+            money=0,
+            refferals=0,
+            prime_status=False
+        )
+        await state.clear()
+        await message.answer("Есть ли у Вас реферальный код?", reply_markup=refer_choice_menu)
+    
+    else:
+        await message.answer("Ваш ID должен содержать только цифры!")
 
-    await message.answer("Регистрация прошла успешно!", reply_markup=only_menu_keyboard)
+
+@router.callback_query(F.data.startswith("refer"))
+async def refer_choice(callback: CallbackQuery, state: FSMContext):
+    data = callback.data.split("_")[-1]
+    print(data)
+    if data == "yes":
+        await callback.message.edit_text("Введите реферальный код:", reply_markup=refer_choice_back_menu)
+        await state.set_state(Registration.refer_input)
+    elif data == "no":
+        await callback.message.delete()
+        await callback.message.answer("Регистрация прошла успешно!", reply_markup=only_menu_keyboard)
+    else:
+        await callback.message.delete()
+        await callback.message.answer("Регистрация прошла успешно!", reply_markup=only_menu_keyboard)
+        await state.clear()
+
+
+@router.message(Registration.refer_input, F.text)
+async def refer_input(message: Message, state: FSMContext):
+    user_message = message.text
+    if user_message in [str(user_id.telegram_id) for user_id in UserRepository.get_all_users()]:
+        UserRepository.add_refferals(int(user_message))
+        await message.reply("Регистрация прошла успешно!", reply_markup=only_menu_keyboard)
+        await state.clear()
+    else:
+        await message.reply("Такого реферального кода нет(", reply_markup=refer_choice_back_menu)

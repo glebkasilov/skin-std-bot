@@ -9,6 +9,7 @@ from database.repository import UserRepository
 from filters.in_db_filter import InDbFilter
 from keyboards.reply_keyboards.main_menu_keyboard import main_menu_keyboard
 
+
 router = Router()
 
 
@@ -34,11 +35,13 @@ async def subscribe(message: Message):
     await message.reply(
         f"""✅Способы получения подписки:
 
-    •Пригласите 15 человек
+    •Пригласите 10 человек
 
     или
 
-    •Пополните бота на 300₽"""
+    •Пополните бота на 300₽
+    <i>Для этого пишите</i> /pay""", 
+    parse_mode=ParseMode.HTML
     )
 
 
@@ -62,7 +65,7 @@ async def support(message: Message):
 
 
 @router.message(F.text == "Профиль и баланс", InDbFilter())
-async def profile(message: Message):
+async def profile(message: Message): 
     user = message.from_user.id
     builder = MediaGroupBuilder(
         caption=f"""🐙<strong> Профиль</strong> [{user}]
@@ -72,7 +75,8 @@ async def profile(message: Message):
 💵 Баланс: <strong>{UserRepository.get_user_money(user)} G</strong>
 🔄 На выдаче: <strong>0 G</strong>
 ➖➖➖➖➖➖➖➖➖➖
-🏠 Рефералы: <strong>{UserRepository.get_user_refferals(user)}</strong>"""
+🏠 Рефералы: <strong>{UserRepository.get_user_refferals(user)}</strong>
+Ваш реферальный код: <I>{user}</I>"""
     )
 
     builder.add_photo(
@@ -88,7 +92,9 @@ async def profile(message: Message):
 @router.message(F.text == "Отзывы", InDbFilter())
 async def reviews(message: Message):
     await message.reply(
-        "Влад, пидорас, сделай отзывы"
+        """@skin_std_reviews - Канал с отзывами о магазине
+        
+@freeskisADM - Пиши сюда отзыв о боте"""
     )
 
 

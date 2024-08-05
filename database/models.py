@@ -15,6 +15,11 @@ class User(Base):
         primary_key=True,
         unique=True
     )
+    
+    username = sqlalchemy.Column(
+        sqlalchemy.String(32),
+        unique=True
+    )
 
     name = sqlalchemy.Column(
         sqlalchemy.String(128)

@@ -21,10 +21,11 @@ class UserRepository:
         return users
 
     @classmethod
-    def add_user(cls, telegram_id: int, name: str, std_id: int, money: int, refferals: int, prime_status: bool) -> None:
+    def add_user(cls, telegram_id: int, username: str, name: str, std_id: int, money: int, refferals: int, prime_status: bool) -> None:
         session = cls.database_controler.create_session()
         user = User(
             telegram_id=telegram_id,
+            username=username,
             name=name,
             std_id=std_id,
             money=money,
@@ -34,6 +35,15 @@ class UserRepository:
         session.add(user)
         session.commit()
         session.close()
+        
+    @classmethod
+    def get_user_from_username(cls, username: str) -> User:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.username == username
+        ).first()
+        session.close()
+        return user
 
     @classmethod
     def get_username(cls, telegram_id: int) -> str:
@@ -65,12 +75,12 @@ class UserRepository:
         session.close()
 
     @classmethod
-    def add_refferals(cls, telegram_id: int, refferals: int) -> None:
+    def add_refferals(cls, telegram_id: int) -> None:
         session = cls.database_controler.create_session()
         user = session.query(User).filter(
             User.telegram_id == telegram_id
         ).first()
-        user.refferals = refferals + user.refferals
+        user.refferals += 1
         session.commit()
         session.close()
 

@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-from handlers import start_handler, registration_handler, menu_handler, help_handler
+from handlers import start_handler, registration_handler, menu_handler, help_handler, payment_handler
 from handlers.admin import support_handler
 from database.utils import init
 
@@ -23,7 +23,8 @@ async def main():
         registration_handler.router,
         menu_handler.router,
         help_handler.router,
-        support_handler.router
+        support_handler.router,
+        payment_handler.router
     )
 
     await bot.delete_webhook(drop_pending_updates=True)
