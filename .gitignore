@@ -2,4 +2,4 @@
 venv
 __pycache__
 .idea
-skin_std_bot.db
+database/skin_std_bot.db
