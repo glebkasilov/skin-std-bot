@@ -32,18 +32,28 @@ async def click(message: Message):
 
 @router.message(F.text == "Получить подписку", InDbFilter())
 async def subscribe(message: Message):
-    await message.reply(
-        f"""✅Способы получения подписки:
+    if UserRepository.get_user_refferals(message.from_user.id) >= 10 and not UserRepository.get_user_prime_status(message.from_user.id):
+        UserRepository.set_user_prime_status(message.from_user.username, True)
+        await message.reply(
+            "Поздравляем, Вы получили статус VIP статус!"
+        )
+    
+    elif not UserRepository.get_user_prime_status(message.from_user.id):
+        await message.reply(
+            f"""✅Способы получения подписки:
 
-    •Пригласите 10 человек
+        •Пригласите 10 человек
 
-    или
+        или
 
-    •Пополните бота на 300₽
-    <i>Для этого пишите</i> /pay""", 
-    parse_mode=ParseMode.HTML
-    )
-
+        •Пополните бота на 300₽
+        <i>Для этого пишите</i> /pay""", 
+        parse_mode=ParseMode.HTML
+        )
+    else:
+        await message.reply(
+            "Благодарим Вас, Вы уже получили подписку"
+        )
 
 @router.message(F.text == "Вывести голду", InDbFilter())
 async def subscribe(message: Message):

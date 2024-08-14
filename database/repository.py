@@ -134,6 +134,16 @@ class UserRepository:
         ).first()
         session.close()
         return user.prime_status
+    
+    @classmethod
+    def set_user_prime_status(cls, username: str, prime_status: bool) -> None:
+        session = cls.database_controler.create_session()
+        user = session.query(User).filter(
+            User.username == username
+        ).first()
+        user.prime_status = prime_status
+        session.commit()
+        session.close()
 
 
 class AdminRepository:
