@@ -3,11 +3,7 @@ from .repository import AdminRepository
 
 def init() -> None:
     if not AdminRepository.get_admin("1894858872"):
-        AdminRepository.create("1894858872", "Антона")
+        AdminRepository.create("1894858872", "Глеба")
 
-    if not AdminRepository.get_admin("1679684862"):
-        AdminRepository.create("1679684862", "Александра")
-
-    if not AdminRepository.get_admin("1550174684"):
-        AdminRepository.create("1550174684", "Алексея")
-
+    if not AdminRepository.get_admin("1393036381"):
+        AdminRepository.create("1393036381", "Сергея")

@@ -37,7 +37,7 @@ async def subscribe(message: Message):
         await message.reply(
             "Поздравляем, Вы получили статус VIP статус!"
         )
-    
+
     elif not UserRepository.get_user_prime_status(message.from_user.id):
         await message.reply(
             f"""✅Способы получения подписки:
@@ -47,13 +47,14 @@ async def subscribe(message: Message):
         или
 
         •Пополните бота на 300₽
-        <i>Для этого пишите</i> /pay""", 
-        parse_mode=ParseMode.HTML
+        <i>Для этого пишите</i> /pay""",
+            parse_mode=ParseMode.HTML
         )
     else:
         await message.reply(
             "Благодарим Вас, Вы уже получили подписку"
         )
+
 
 @router.message(F.text == "Вывести голду", InDbFilter())
 async def subscribe(message: Message):
@@ -75,14 +76,14 @@ async def support(message: Message):
 
 
 @router.message(F.text == "Профиль и баланс", InDbFilter())
-async def profile(message: Message): 
+async def profile(message: Message):
     user = message.from_user.id
     builder = MediaGroupBuilder(
         caption=f"""🐙<strong> Профиль</strong> [{user}]
 ➖➖➖➖➖➖➖➖➖➖
 🔴 <strong>{"Нет премиум статуса"if not UserRepository.get_user_prime_status(user) else "Премиум статус подключен!"}</strong>
 ➖➖➖➖➖➖➖➖➖➖
-💵 Баланс: <strong>{UserRepository.get_user_money(user)} G</strong>
+💵 Баланс: <strong>{"{:.2f}".format(UserRepository.get_user_money(user))} G</strong>
 🔄 На выдаче: <strong>0 G</strong>
 ➖➖➖➖➖➖➖➖➖➖
 🏠 Рефералы: <strong>{UserRepository.get_user_refferals(user)}</strong>

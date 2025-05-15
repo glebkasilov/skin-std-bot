@@ -35,13 +35,13 @@ async def help_message(message: Message, bot: Bot, state: FSMContext):
     text = message.text
 
     await message.answer(
-        f"Ваш вопрос: {
-            text}. Модераторы ответят на него как только будут свободны😄",
-            reply_markup=main_menu_keyboard
+        f"Ваш вопрос: {text}. Модераторы ответят на него как только будут свободны😄",
+        reply_markup=main_menu_keyboard
     )
-    
-    SupportRepository.create_question(message.from_user.id, message.from_user.username, text)
-    
+
+    SupportRepository.create_question(
+        message.from_user.id, message.from_user.username, text)
+
     admins = AdminRepository.get_all_admins()
 
     for i in admins:

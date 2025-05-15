@@ -56,10 +56,9 @@ async def cmd_subscribe(message: Message, state: FSMContext):
 
 @router.callback_query(CheckSubscribe.not_subscribe, F.data == "sub_check", NotInDbFilter())
 async def check_subs(callback: CallbackQuery, bot: Bot, state: FSMContext):
-    user_channel_status = await bot.get_chat_member(chat_id='@freeskis', user_id=callback.from_user.id)
-    user_channel_status1 = await bot.get_chat_member(chat_id='@skin_std_reviews', user_id=callback.from_user.id)
-    user_channel_status2 = await bot.get_chat_member(chat_id='@skin_std_feedback', user_id=callback.from_user.id)
-    if user_channel_status.status != 'left' and user_channel_status1.status != 'left' and user_channel_status2.status != 'left':
+    user_channel_status = await bot.get_chat_member(chat_id='@pelmen_sel', user_id=callback.from_user.id)
+    user_channel_status1 = await bot.get_chat_member(chat_id='@skin_std_feedback', user_id=callback.from_user.id)
+    if user_channel_status.status != 'left' and user_channel_status1.status != 'left':
         await callback.message.edit_text('Спасибо за подписку!')
         await state.clear()
         await state.set_state(CheckSubscribe.is_subscribe)
