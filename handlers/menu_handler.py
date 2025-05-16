@@ -81,7 +81,7 @@ async def profile(message: Message):
     builder = MediaGroupBuilder(
         caption=f"""🐙<strong> Профиль</strong> [{user}]
 ➖➖➖➖➖➖➖➖➖➖
-🔴 <strong>{"Нет премиум статуса"if not UserRepository.get_user_prime_status(user) else "Премиум статус подключен!"}</strong>
+<strong>{"🔴 Нет премиум статуса"if not UserRepository.get_user_prime_status(user) else "🟢 Премиум статус подключен!"}</strong>
 ➖➖➖➖➖➖➖➖➖➖
 💵 Баланс: <strong>{"{:.2f}".format(UserRepository.get_user_money(user))} G</strong>
 🔄 На выдаче: <strong>0 G</strong>
